@@ -341,12 +341,13 @@ module.exports.resetPassword = async (req, res) => {
 
     // Redis se OTP lo
     const savedOtp = await redis.get(`otp:reset:${email}`);
+
     if (!savedOtp) {
       return errorResponse(res, "OTP expired or not requested", 400);
     }
 
     // OTP match karo
-    if (savedOtp !== otp) {
+    if (String(savedOtp) !== String(otp)) {
       return errorResponse(res, "Invalid OTP", 400);
     }
 
