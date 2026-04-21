@@ -65,14 +65,14 @@ module.exports.verifyOtp = async(req,res)=>{
             return errorResponse(res,"OTP expired or invalid" , 400);
         }
 
-        const {otp : savedOtp , verified} = JSON.parse(data);
+        const {otp : savedOtp , verified} = data;
 
         if(savedOtp !== otp){
             return errorResponse(res,"Invalid OTP" , 400);
         }
 
         // mark otp as verified in redis 
-        await redix.setex(
+        await redis.setex(
             `otp:signup:${email}`,
             300,
             JSON.stringify({otp : savedOtp , verified : true})
@@ -111,7 +111,7 @@ module.exports.register = async (req, res) => {
       return errorResponse(res, "OTP expired. Please request again", 400);
     }
 
-    const { verified } = JSON.parse(data);
+    const { verified } = data;
     if (!verified) {
       return errorResponse(res, "OTP not verified", 400);
     }
@@ -127,6 +127,8 @@ module.exports.register = async (req, res) => {
       password: hashedPassword,
     });
 
+    const updatedUser = await userService.verifyUser(email);
+
     // isVerified true karo
     await userService.verifyUser(email);
 
@@ -134,18 +136,19 @@ module.exports.register = async (req, res) => {
     await redis.del(`otp:signup:${email}`);
 
     // Token generate karo
-    const token = user.generateAuthToken();
+    const token = updatedUser.generateAuthToken();
 
     return successResponse(res, "User registered successfully", {
       token,
       user: {
-        id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
+        id: updatedUser._id,
+        fullname: updatedUser.fullname,
+        email: updatedUser.email,
+        isVerified: updatedUser.isVerified,
+        createdAt: updatedUser.createdAt,
       },
     }, 201);
+    
   } catch (error) {
     console.error("Register error:", error.message);
     return errorResponse(res, "Internal server error", 500);

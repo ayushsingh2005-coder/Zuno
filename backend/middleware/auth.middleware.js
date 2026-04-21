@@ -25,7 +25,7 @@ module.exports.authMiddleware = async (req,res,next) =>{
         }
 
         // User existence check
-        const user = await userService.findUserById(decoded._id);
+        const user = await userService.findById(decoded._id);
         if(!user){
             return errorResponse(res, "User not found" , 404);
         }

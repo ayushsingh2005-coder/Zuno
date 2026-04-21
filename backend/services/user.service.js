@@ -30,13 +30,17 @@ const verifyUser = async (email) => {
   return await User.findOneAndUpdate(
     { email },
     { isVerified: true },
-    { new: true }
+    { returnDocument: "after" }
   );
 };
 
 // Profile update karo
 const updateProfile = async (id, updateData) => {
-  return await User.findByIdAndUpdate(id, updateData, { new: true });
+  return await User.findByIdAndUpdate(
+    id,
+    updateData,
+    { returnDocument: "after" }
+  );
 };
 
 module.exports = {
