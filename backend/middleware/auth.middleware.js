@@ -3,7 +3,7 @@ const redis = require("../config/redis");
 const userService = require("../services/user.service");
 const {errorResponse} = require("../utils/apiResponse");
 
-module.expoers.authMiddleware = async (req,res,next) =>{
+module.exports.authMiddleware = async (req,res,next) =>{
     try{
         // 1. Get token from header
         const token = req.headers.authorization?.split(" ")[1];

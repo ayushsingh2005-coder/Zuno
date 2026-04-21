@@ -7,6 +7,7 @@ const express = require('express');
 const app = express();
 const connectDB = require('./config/db');
 const cors = require('cors');
+const authRoutes = require("./routes/auth.routes.js");
 
 // Enable CORS for all routes
 app.use(cors());
@@ -23,6 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
     res.send('Welcome to Zuno🎵 : A music streaming platform for free ,Download and stream your favorite music without any subscription');
 });
+
+// ROUTES -----
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
     console.log(`server is listening at http://localhost:${PORT}`);

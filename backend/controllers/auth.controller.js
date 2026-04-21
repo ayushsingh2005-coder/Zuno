@@ -1,7 +1,7 @@
 const userService = require("../services/user.service.js");
 const sendEmail = require("../utils/sendEmail.js");
 const generateOtp = require("../utils/generateOtp.js");
-const redis = require("..config/redis.js");
+const redis = require("../config/redis.js");
 const {successResponse , errorResponse} = require("../utils/apiResponse.js");
 const {validationResult} = require("express-validator");
 
@@ -51,7 +51,7 @@ module.exports.sendOtp = async(req,res) =>{
 
 // VERIFY OTP
 
-module.exports.verifyOtp = async(res,res)=>{
+module.exports.verifyOtp = async(req,res)=>{
     try{
         const {email , otp} = req.body;
 
