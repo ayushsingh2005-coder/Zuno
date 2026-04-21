@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 
-// Naya user banao
+
 const createUser = async ({ firstname, lastname, email, password }) => {
   if (!firstname || !email || !password) {
     throw new Error("All fields are required");
