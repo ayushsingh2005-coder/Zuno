@@ -8,6 +8,8 @@ const app = express();
 const connectDB = require('./config/db');
 const cors = require('cors');
 const authRoutes = require("./routes/auth.routes.js");
+const songRoutes = require("./routes/song.routes.js");
+const albumRoutes = require("./routes/album.routes");
 
 // Enable CORS for all routes
 app.use(cors());
@@ -27,6 +29,8 @@ app.get('/', (req, res) => {
 
 // ROUTES -----
 app.use("/api/auth", authRoutes);
+app.use("/api/songs", songRoutes);
+app.use("/api/albums", albumRoutes); 
 
 app.listen(PORT, () => {
     console.log(`server is listening at http://localhost:${PORT}`);
