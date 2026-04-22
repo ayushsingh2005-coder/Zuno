@@ -34,11 +34,11 @@ const songSchema = new mongoose.Schema({
         required : true,
     },
 
-    genre : {
-        type : String,
-        enum : ["Pop", "Rock", "Hip-Hop", "Jazz", "Classical", "Electronic", "Country", "Reggae", "Blues", "Folk", "Metal", "Other"],
-        default : "Other",
-    },
+    genre: {
+  type: String,
+  enum: ["pop", "rock", "hiphop", "jazz", "classical", "electronic", "folk", "other"],
+  default: "other",
+},
 
     plays : {
         type : Number,

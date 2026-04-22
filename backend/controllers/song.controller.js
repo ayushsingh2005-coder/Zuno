@@ -8,6 +8,8 @@ const { successResponse, errorResponse } = require("../utils/apiResponse");
 // ─────────────────────────────────────────
 module.exports.uploadSong = async (req, res) => {
   try {
+    console.log("Body:", req.body);
+console.log("Files:", req.files);
     const { title, artist, album, duration, genre } = req.body;
 
     // Validation

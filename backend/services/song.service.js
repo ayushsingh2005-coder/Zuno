@@ -1,5 +1,7 @@
 const Song = require("../models/song.model");
 const redis = require("../config/redis");
+require("../models/user.model");
+require("../models/album.model");
 
 // Song banao
 const createSong = async (songData) => {
