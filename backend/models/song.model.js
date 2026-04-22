@@ -35,7 +35,7 @@ const songSchema = new mongoose.Schema({
     },
 
     genre : {
-        type : string,
+        type : String,
         enum : ["Pop", "Rock", "Hip-Hop", "Jazz", "Classical", "Electronic", "Country", "Reggae", "Blues", "Folk", "Metal", "Other"],
         default : "Other",
     },
