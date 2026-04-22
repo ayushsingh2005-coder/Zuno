@@ -21,6 +21,7 @@ const songRoutes = require("./routes/song.routes.js");
 const albumRoutes = require("./routes/album.routes");
 const playlistRoutes = require("./routes/playlist.routes");
 const likeRoutes = require("./routes/like.routes");
+const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/playlists", playlistRoutes);
 app.use("/api/likes", likeRoutes);
+app.use("/api/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
