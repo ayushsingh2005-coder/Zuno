@@ -1,25 +1,31 @@
-import { useAuth } from './context/AuthContext'
-import { usePlayer } from './context/PlayerContext'
+import { BrowserRouter } from 'react-router-dom'
+import Navbar from './components/layout/Navbar'
+import Sidebar from './components/layout/Sidebar'
+import PlayerBar from './components/layout/PlayerBar'
 
 function App() {
-  const { user, loading } = useAuth()
-  const { currentSong, isPlaying } = usePlayer()
-
-  if (loading) return <p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Loading...</p>
-
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ fontSize: '2rem', letterSpacing: '0.3em' }}>Z U N O</h1>
-      <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-        AuthContext ✓ | PlayerContext ✓
-      </p>
-      <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-        User: {user ? user.name : 'Not logged in'}
-      </p>
-      <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-        Now playing: {currentSong ? currentSong.title : 'Nothing'}
-      </p>
-    </div>
+    <BrowserRouter>
+      <Navbar />
+
+      <div style={{
+        paddingTop: 'var(--navbar-h)',
+        paddingBottom: 'var(--player-h)',
+        paddingLeft: 'var(--sidebar-w)',
+        minHeight: '100vh',
+      }}>
+        <Sidebar />
+
+        {/* Pages will render here */}
+        <main style={{ padding: '2rem' }}>
+          <h2 style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.1em' }}>
+            LAYOUT ACTIVE ✓
+          </h2>
+        </main>
+      </div>
+
+      <PlayerBar />
+    </BrowserRouter>
   )
 }
 
