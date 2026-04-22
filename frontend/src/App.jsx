@@ -12,11 +12,45 @@ import Home           from './pages/Home'
 import Explore        from './pages/Explore'
 import Search         from './pages/Search'
 import Library        from './pages/Library'
+import PlaylistDetail from './pages/PlaylistDetail'
+import AlbumDetail    from './pages/AlbumDetail'
 import Profile        from './pages/Profile'
 import Login          from './pages/Login'
 import Register       from './pages/Register'
-import AlbumDetail    from './pages/AlbumDetail'
-import PlaylistDetail from './pages/PlaylistDetail'
+
+// Auth pages use a different layout (no sidebar/player)
+function AuthLayout({ children }) {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--bg)',
+    }}>
+      {children}
+    </div>
+  )
+}
+
+// Main app layout (with sidebar, navbar, player)
+function AppLayout({ children }) {
+  return (
+    <>
+      <Navbar />
+      <div style={{
+        paddingTop: 'var(--navbar-h)',
+        paddingBottom: 'var(--player-h)',
+        paddingLeft: 'var(--sidebar-w)',
+        minHeight: '100vh',
+      }}>
+        <Sidebar />
+        <main>{children}</main>
+      </div>
+      <PlayerBar />
+    </>
+  )
+}
 
 export default function App() {
   return (
@@ -31,51 +65,61 @@ export default function App() {
             color: 'var(--text)',
             border: '1px solid var(--border)',
             fontSize: '0.8rem',
-            fontFamily: 'var(--font)',
           },
         }}
       />
 
-      <Navbar />
+      <Routes>
 
-      <div style={{
-        paddingTop:    'var(--navbar-h)',
-        paddingBottom: 'var(--player-h)',
-        paddingLeft:   'var(--sidebar-w)',
-        minHeight:     '100vh',
-      }}>
-        <Sidebar />
+        {/* ── Auth pages (no sidebar/player) ── */}
+        <Route path='/login' element={
+          <AuthLayout><Login /></AuthLayout>
+        } />
+        <Route path='/register' element={
+          <AuthLayout><Register /></AuthLayout>
+        } />
 
-        <main style={{ padding: '2rem' }}>
-          <Routes>
+        {/* ── Protected pages (need login) ── */}
+        <Route path='/' element={
+          <ProtectedRoute>
+            <AppLayout><Home /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/explore' element={
+          <ProtectedRoute>
+            <AppLayout><Explore /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/search' element={
+          <ProtectedRoute>
+            <AppLayout><Search /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/library' element={
+          <ProtectedRoute>
+            <AppLayout><Library /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/playlist/:id' element={
+          <ProtectedRoute>
+            <AppLayout><PlaylistDetail /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/album/:id' element={
+          <ProtectedRoute>
+            <AppLayout><AlbumDetail /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path='/profile' element={
+          <ProtectedRoute>
+            <AppLayout><Profile /></AppLayout>
+          </ProtectedRoute>
+        } />
 
-            {/* ── Public Routes ── */}
-            <Route path='/'        element={<Home />} />
-            <Route path='/explore' element={<Explore />} />
-            <Route path='/search'  element={<Search />} />
-            <Route path='/login'   element={<Login />} />
-            <Route path='/register' element={<Register />} />
-            <Route path='/album/:id' element={<AlbumDetail />} />
+        {/* ── Catch all → redirect home ── */}
+        <Route path='*' element={<Navigate to='/' replace />} />
 
-            {/* ── Protected Routes ── */}
-            <Route path='/library' element={
-              <ProtectedRoute><Library /></ProtectedRoute>
-            }/>
-            <Route path='/profile' element={
-              <ProtectedRoute><Profile /></ProtectedRoute>
-            }/>
-            <Route path='/playlist/:id' element={
-              <ProtectedRoute><PlaylistDetail /></ProtectedRoute>
-            }/>
-
-            {/* ── Fallback ── */}
-            <Route path='*' element={<Navigate to='/' replace />} />
-
-          </Routes>
-        </main>
-      </div>
-
-      <PlayerBar />
+      </Routes>
 
     </BrowserRouter>
   )

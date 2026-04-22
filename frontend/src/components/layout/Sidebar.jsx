@@ -12,8 +12,11 @@ export default function Sidebar() {
   useEffect(() => {
     if (!user) return
     api.get('/playlists')
-      .then(res => setPlaylists(res.data.data || []))
-      .catch(() => {})
+      .then(res => {
+        const data = res.data.data;
+        setPlaylists(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setPlaylists([]))
   }, [user])
 
   const navStyle = (isActive) => ({
@@ -73,7 +76,7 @@ export default function Sidebar() {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {playlists.map(pl => (
+            {Array.isArray(playlists) && playlists.map(pl => (
               <span
                 key={pl._id}
                 onClick={() => navigate(`/playlist/${pl._id}`)}

@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
 
-  // Still verifying token — don't redirect yet
   if (loading) {
     return (
       <div style={{
@@ -21,9 +20,9 @@ export default function ProtectedRoute({ children }) {
     )
   }
 
-  // Not logged in → send to login
-  if (!user) return <Navigate to='/login' replace />
+  if (!user) {
+    return <Navigate to='/login' replace />
+  }
 
-  // Logged in → render the actual page
   return children
 }
