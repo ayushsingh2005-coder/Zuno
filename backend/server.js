@@ -26,8 +26,12 @@ const userRoutes = require("./routes/user.routes");
 const app = express();
 
 app.use(cors({
-  origin: '*',
-}));
+  origin: [
+    'http://localhost:5173',
+    'https://zuno-pi.vercel.app'
+  ],
+  credentials: true
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
