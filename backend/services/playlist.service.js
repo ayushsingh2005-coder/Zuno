@@ -2,12 +2,18 @@ const Playlist = require("../models/playlist.model");
 const redis = require("../config/redis");
 
 // Playlist banao
-const createPlaylist = async (playlistData) => {
-  const playlist = await Playlist.create(playlistData);
-  // Sirf us user ka cache clear karo
-  await redis.del(`cache:playlists:${playlistData.createdBy}`);
-  return playlist;
-};
+const createPlaylist = async (data) => {
+  const playlist = await Playlist.create(data)
+  try {
+    const keys = await redis.keys("cache:playlists:*")
+    if (keys && keys.length) {
+      await Promise.all(keys.map(k => redis.del(k)))
+    }
+  } catch (e) {
+    console.log('Cache clear error:', e)
+  }
+  return playlist
+}
 
 // User ki saari playlists lo
 const getUserPlaylists = async (userId, page = 1, limit = 10) => {

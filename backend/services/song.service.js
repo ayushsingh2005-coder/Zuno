@@ -5,10 +5,17 @@ require("../models/album.model");
 
 // Song banao
 const createSong = async (songData) => {
-  const song = await Song.create(songData);
-  await redis.del("cache:songs:*"); // Saara songs cache delete
-  return song;
-};
+  const song = await Song.create(songData)
+  try {
+    const keys = await redis.keys("cache:songs:*")
+    if (keys && keys.length) {
+      await Promise.all(keys.map(k => redis.del(k)))
+    }
+  } catch (e) {
+    console.log('Cache clear error:', e)
+  }
+  return song
+}
 
 // Saare songs lo — WITH PAGINATION
 const getAllSongs = async (page = 1, limit = 10) => {
