@@ -5,11 +5,10 @@ import api from '../api/axios'
 import toast from 'react-hot-toast'
 
 export default function Register() {
-  const { login }  = useAuth()
-  const navigate   = useNavigate()
+  const { login } = useAuth()
+  const navigate  = useNavigate()
 
-  const [step, setStep]       = useState(1)     
-   // 1 = email, 2 = otp, 3 = details
+  const [step,    setStep]    = useState(1)
   const [loading, setLoading] = useState(false)
 
   // Step 1
@@ -20,19 +19,18 @@ export default function Register() {
 
   // Step 3
   const [form, setForm] = useState({
-  firstname: '',
-  lastname: '',
-  password: '',
-  confirmPassword: ''
-})
+    firstname: '',
+    lastname: '',
+    password: '',
+    confirmPassword: '',
+  })
 
-  const handleFormChange = (e) => {
+  const handleFormChange = (e) =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
 
-  // ── Step 1: Send OTP ─────────────────────────────
+  // ── Step 1: Send OTP ───────────────────────────────────────────────────────
   const handleSendOtp = async () => {
-    if (!email) { toast.error('Enter your email'); return }
+    if (!email) return toast.error('Enter your email')
     setLoading(true)
     try {
       await api.post('/auth/send-otp', { email })
@@ -45,9 +43,9 @@ export default function Register() {
     }
   }
 
-  // ── Step 2: Verify OTP ───────────────────────────
+  // ── Step 2: Verify OTP ─────────────────────────────────────────────────────
   const handleVerifyOtp = async () => {
-    if (!otp) { toast.error('Enter the OTP'); return }
+    if (!otp) return toast.error('Enter the OTP')
     setLoading(true)
     try {
       await api.post('/auth/verify-otp', { email, otp })
@@ -60,27 +58,28 @@ export default function Register() {
     }
   }
 
-  // ── Step 3: Register ─────────────────────────────
+  // ── Step 3: Register ───────────────────────────────────────────────────────
   const handleRegister = async () => {
-    if (!form.name || !form.password || !form.confirmPassword) {
-      toast.error('Fill all fields'); return
+    if (!form.firstname || !form.password || !form.confirmPassword) {
+      return toast.error('Fill all fields')
     }
     if (form.password !== form.confirmPassword) {
-      toast.error('Passwords do not match'); return
+      return toast.error('Passwords do not match')
+    }
+    if (form.password.length < 6) {
+      return toast.error('Password must be at least 6 characters')
     }
     setLoading(true)
     try {
-         console.log('Sending to backend:', { name: form.name, email, password: form.password })
-
       const res = await api.post('/auth/register', {
-        firstname: form.name.split(' ')[0],
-        lastname: form.name.split(' ').slice(1).join(' '),
+        firstname: form.firstname.trim(),
+        lastname:  form.lastname.trim(),
         email,
-        password: form.password,
+        password:  form.password,
       })
       const { user, token } = res.data.data
       login(user, token)
-      toast.success(`Welcome to Zuno, ${user.name}!`)
+      toast.success(`Welcome to Zuno, ${user.fullname?.firstname}!`)
       navigate('/')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed')
@@ -89,7 +88,6 @@ export default function Register() {
     }
   }
 
-  // ── Step indicator ───────────────────────────────
   const steps = ['EMAIL', 'VERIFY', 'DETAILS']
 
   return (
@@ -115,12 +113,7 @@ export default function Register() {
       }}>
         {steps.map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}>
-              {/* Circle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{
                 width: '20px',
                 height: '20px',
@@ -142,7 +135,6 @@ export default function Register() {
               }}>
                 {step > i + 1 ? '✓' : i + 1}
               </div>
-              {/* Label */}
               <span style={{
                 fontSize: '0.6rem',
                 letterSpacing: '0.1em',
@@ -151,8 +143,6 @@ export default function Register() {
                 {s}
               </span>
             </div>
-
-            {/* Connector line */}
             {i < steps.length - 1 && (
               <div style={{
                 width: '20px',
@@ -176,14 +166,11 @@ export default function Register() {
               onChange={e => setEmail(e.target.value)}
               placeholder='your@email.com'
               style={inputStyle}
+              autoFocus
               onKeyDown={e => e.key === 'Enter' && handleSendOtp()}
             />
           </div>
-          <button
-            onClick={handleSendOtp}
-            disabled={loading}
-            style={btnStyle(loading)}
-          >
+          <button onClick={handleSendOtp} disabled={loading} style={btnStyle(loading)}>
             {loading ? 'SENDING...' : 'SEND OTP'}
           </button>
         </div>
@@ -201,13 +188,12 @@ export default function Register() {
             We sent a 6-digit code to<br />
             <span style={{ color: 'var(--text)' }}>{email}</span>
           </p>
-
           <div>
             <label style={labelStyle}>OTP CODE</label>
             <input
               type='text'
               value={otp}
-              onChange={e => setOtp(e.target.value.replace(/\D/, '').slice(0, 6))}
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder='______'
               maxLength={6}
               style={{
@@ -216,19 +202,13 @@ export default function Register() {
                 fontSize: '1.25rem',
                 textAlign: 'center',
               }}
+              autoFocus
               onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
             />
           </div>
-
-          <button
-            onClick={handleVerifyOtp}
-            disabled={loading}
-            style={btnStyle(loading)}
-          >
+          <button onClick={handleVerifyOtp} disabled={loading} style={btnStyle(loading)}>
             {loading ? 'VERIFYING...' : 'VERIFY OTP'}
           </button>
-
-          {/* Resend */}
           <button
             onClick={handleSendOtp}
             style={{
@@ -241,7 +221,8 @@ export default function Register() {
               cursor: 'pointer',
             }}
           >
-            Didn't receive it? <span style={{ color: 'var(--text-muted)' }}>Resend OTP</span>
+            Didn't receive it?{' '}
+            <span style={{ color: 'var(--text-muted)' }}>Resend OTP</span>
           </button>
         </div>
       )}
@@ -249,16 +230,30 @@ export default function Register() {
       {/* ── Step 3: Details ── */}
       {step === 3 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div>
-            <label style={labelStyle}>FULL NAME</label>
-            <input
-              name='name'
-              type='text'
-              value={form.name}
-              onChange={handleFormChange}
-              placeholder='Your name'
-              style={inputStyle}
-            />
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>FIRST NAME</label>
+              <input
+                name='firstname'
+                type='text'
+                value={form.firstname}
+                onChange={handleFormChange}
+                placeholder='First'
+                style={inputStyle}
+                autoFocus
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>LAST NAME</label>
+              <input
+                name='lastname'
+                type='text'
+                value={form.lastname}
+                onChange={handleFormChange}
+                placeholder='Last'
+                style={inputStyle}
+              />
+            </div>
           </div>
           <div>
             <label style={labelStyle}>PASSWORD</label>
@@ -283,22 +278,14 @@ export default function Register() {
               onKeyDown={e => e.key === 'Enter' && handleRegister()}
             />
           </div>
-          <button
-            onClick={handleRegister}
-            disabled={loading}
-            style={btnStyle(loading)}
-          >
+          <button onClick={handleRegister} disabled={loading} style={btnStyle(loading)}>
             {loading ? 'CREATING...' : 'CREATE ACCOUNT'}
           </button>
         </div>
       )}
 
-      {/* Link to login */}
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <Link to='/login' style={{
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)',
-        }}>
+        <Link to='/login' style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           Already have an account?{' '}
           <span style={{ color: 'var(--text)' }}>Sign in</span>
         </Link>
@@ -308,7 +295,6 @@ export default function Register() {
   )
 }
 
-// ── Shared styles ────────────────────────────────────
 const labelStyle = {
   display: 'block',
   fontSize: '0.65rem',

@@ -8,17 +8,19 @@ import PlayerBar       from './components/layout/PlayerBar'
 import ProtectedRoute  from './components/layout/ProtectedRoute'
 
 // Pages
-import Home           from './pages/Home'
-import Explore        from './pages/Explore'
-import Search         from './pages/Search'
-import Library        from './pages/Library'
-import PlaylistDetail from './pages/PlaylistDetail'
-import AlbumDetail    from './pages/AlbumDetail'
-import Profile        from './pages/Profile'
-import Login          from './pages/Login'
-import Register       from './pages/Register'
+import Home            from './pages/Home'
+import Explore         from './pages/Explore'
+import Search          from './pages/Search'
+import Library         from './pages/Library'
+import PlaylistDetail  from './pages/PlaylistDetail'
+import AlbumDetail     from './pages/AlbumDetail'
+import Profile         from './pages/Profile'
+import Login           from './pages/Login'
+import Register        from './pages/Register'
+import ForgotPassword  from './pages/ForgotPassword'
+import ResetPassword   from './pages/ResetPassword'
+import AdminPanel      from './pages/AdminPanel.jsx'
 
-// Auth pages use a different layout (no sidebar/player)
 function AuthLayout({ children }) {
   return (
     <div style={{
@@ -33,7 +35,6 @@ function AuthLayout({ children }) {
   )
 }
 
-// Main app layout (with sidebar, navbar, player)
 function AppLayout({ children }) {
   return (
     <>
@@ -55,8 +56,6 @@ function AppLayout({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
-
-      {/* Toast notifications — works everywhere in app */}
       <Toaster
         position='top-right'
         toastOptions={{
@@ -77,6 +76,12 @@ export default function App() {
         } />
         <Route path='/register' element={
           <AuthLayout><Register /></AuthLayout>
+        } />
+        <Route path='/forgot-password' element={
+          <AuthLayout><ForgotPassword /></AuthLayout>
+        } />
+        <Route path='/reset-password' element={
+          <AuthLayout><ResetPassword /></AuthLayout>
         } />
 
         {/* ── Protected pages (need login) ── */}
@@ -116,7 +121,13 @@ export default function App() {
           </ProtectedRoute>
         } />
 
-        {/* ── Catch all → redirect home ── */}
+        {/* ── Admin only ── */}
+        <Route path='/admin' element={
+          <ProtectedRoute adminOnly>
+            <AppLayout><AdminPanel /></AppLayout>
+          </ProtectedRoute>
+        } />
+
         <Route path='*' element={<Navigate to='/' replace />} />
 
       </Routes>
