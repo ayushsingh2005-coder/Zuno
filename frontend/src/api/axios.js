@@ -3,7 +3,7 @@ import axios from 'axios'
 // BASE Instance - all req goes through this
 
 const api = axios.create({
-    baseURL : 'http://localhost:5000/api',
+    baseURL : import.meta.env.VITE_API_URL,
 })
 
 //── Request Interceptor ──────────────────────────────
