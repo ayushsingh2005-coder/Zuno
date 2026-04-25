@@ -29,8 +29,10 @@ export default function Sidebar() {
     transition: 'color 0.15s',
   })
 
+  const closeSidebar = () => document.body.classList.remove('sidebar-open')
+
   return (
-    <aside style={{
+    <aside className="sidebar" style={{
       position: 'fixed',
       top: 'var(--navbar-h)',
       left: 0,
@@ -42,6 +44,9 @@ export default function Sidebar() {
       gap: '2rem',
       overflowY: 'auto',
       borderRight: '1px solid var(--border)',
+      transition: 'transform 0.3s',
+      backgroundColor: 'var(--bg)',
+      zIndex: 90,
     }}>
 
       {/* Main nav */}
@@ -56,6 +61,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             end={to === '/'}
+            onClick={closeSidebar}
             style={({ isActive }) => navStyle(isActive)}
           >
             {label}
@@ -79,7 +85,7 @@ export default function Sidebar() {
             {Array.isArray(playlists) && playlists.map(pl => (
               <span
                 key={pl._id}
-                onClick={() => navigate(`/playlist/${pl._id}`)}
+                onClick={() => { closeSidebar(); navigate(`/playlist/${pl._id}`) }}
                 style={{
                   fontSize: '0.8rem',
                   color: 'var(--text-muted)',
@@ -98,7 +104,7 @@ export default function Sidebar() {
 
             {/* Create new playlist */}
             <span
-              onClick={() => navigate('/library')}
+              onClick={() => { closeSidebar(); navigate('/library') }}
               style={{
                 fontSize: '0.8rem',
                 color: 'var(--text-dim)',

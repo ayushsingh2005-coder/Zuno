@@ -13,8 +13,30 @@ export function PlayerProvider({ children }) {
   const [queue, setQueue]             = useState([])     
   const [queueIndex, setQueueIndex]   = useState(0)      
 
+  const [isShuffle, setIsShuffle]     = useState(false)
+  const [isLoop, setIsLoop]           = useState(false)
+
   const howlRef  = useRef(null)   
   const seekTimer = useRef(null)  
+
+  // ── Restore from localStorage ────────────────────────
+  useEffect(() => {
+    const saved = localStorage.getItem('last_played_zuno')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setCurrentSong(parsed)
+        setQueue([parsed])
+      } catch (e) {}
+    }
+  }, [])
+
+  // ── Persist on change ────────────────────────────────
+  useEffect(() => {
+    if (currentSong) {
+      localStorage.setItem('last_played_zuno', JSON.stringify(currentSong))
+    }
+  }, [currentSong])
 
   // ── Cleanup on unmount ───────────────────────────────
   useEffect(() => {
@@ -56,7 +78,14 @@ export function PlayerProvider({ children }) {
       },
       onend: () => {
         clearInterval(seekTimer.current)
-        playNext()                   // auto-play next song in queue
+        if (isLoop) {
+          // Howl allows direct seeking/playing. We can just play() which restarts unless it's unloaded,
+          // but better to explicitly seek(0) and play() just in case.
+          sound.seek(0)
+          sound.play()
+        } else {
+          playNext()                   // auto-play next song in queue
+        }
       },
       onloaderror: (id, err) => {
         console.error('Howl load error:', err)
@@ -88,21 +117,34 @@ export function PlayerProvider({ children }) {
 
   // ── Toggle play / pause ──────────────────────────────
   const togglePlay = () => {
-    if (!howlRef.current) return
-    if (howlRef.current.playing()) {
-      howlRef.current.pause()
-    } else {
-      howlRef.current.play()
-      setIsPlaying(true)
+    if (howlRef.current) {
+      if (howlRef.current.playing()) {
+        howlRef.current.pause()
+      } else {
+        howlRef.current.play()
+        setIsPlaying(true)
+      }
+    } else if (currentSong) {
+      _loadAndPlay(currentSong)
     }
   }
+
+  // ── Toggle Shuffle & Loop ────────────────────────────
+  const toggleShuffle = () => setIsShuffle(p => !p)
+  const toggleLoop    = () => setIsLoop(p => !p)
 
   // ── Next song ────────────────────────────────────────
   const playNext = () => {
     if (!queue.length) return
-    const nextIndex = (queueIndex + 1) % queue.length
-    setQueueIndex(nextIndex)
-    _loadAndPlay(queue[nextIndex])
+    if (isShuffle) {
+      const nextIndex = Math.floor(Math.random() * queue.length)
+      setQueueIndex(nextIndex)
+      _loadAndPlay(queue[nextIndex])
+    } else {
+      const nextIndex = (queueIndex + 1) % queue.length
+      setQueueIndex(nextIndex)
+      _loadAndPlay(queue[nextIndex])
+    }
   }
 
   // ── Previous song ────────────────────────────────────
@@ -136,6 +178,8 @@ export function PlayerProvider({ children }) {
       volume,
       queue,
       queueIndex,
+      isShuffle,
+      isLoop,
       playSong,
       playList,
       togglePlay,
@@ -143,6 +187,8 @@ export function PlayerProvider({ children }) {
       playPrev,
       seekTo,
       changeVolume,
+      toggleShuffle,
+      toggleLoop,
     }}>
       {children}
     </PlayerContext.Provider>

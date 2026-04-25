@@ -255,7 +255,7 @@ function SongsTab() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {songs.map(song => {
             const thumb =
-              song.thumbnail?.url || song.thumbnail || null
+              typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || null)
             return (
               <div
                 key={song._id}
@@ -525,7 +525,7 @@ function AlbumsTab() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {albums.map(album => {
             const cover =
-              album.coverImage?.url || album.coverImage || null
+              typeof album.coverImage === 'string' ? album.coverImage : (album.coverImage?.url || null)
             const isExpanded = expanded === album._id
             const albumSongs = album.songs || []
 

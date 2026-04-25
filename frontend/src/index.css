@@ -75,3 +75,58 @@ img { display: block; width: 100%; object-fit: cover; }
 .gap-4 { gap: 16px; }
 .w-full { width: 100%; }
 .h-full { height: 100%; }
+
+/* ── Mobile Layout Fixes ── */
+
+.mobile-menu-btn { display: none; }
+.desktop-notifications { display: block; }
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 0px;
+    --player-h: 120px; /* Taller player to allow wrapping controls */
+    --navbar-h: 60px;
+  }
+
+  .mobile-menu-btn { display: block; }
+  .desktop-notifications { display: none !important; }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px !important;
+    background: var(--bg);
+  }
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+  }
+
+  /* Adjust player bar to stack controls */
+  .player-bar {
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+  .player-bar > div {
+    min-width: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .player-bar > div:first-child p {
+    text-align: center !important;
+  }
+  .player-bar-volume {
+    display: none !important; /* hide volume on mobile for cleaner look */
+  }
+
+  /* Make home cards slightly smaller so they fit better */
+  div[style*="180px"] {
+    width: 140px !important;
+    height: 140px !important;
+  }
+  div[style*="180px"] > div:first-child {
+    width: 140px !important;
+    height: 140px !important;
+  }
+}

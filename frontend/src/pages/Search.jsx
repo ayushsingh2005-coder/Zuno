@@ -6,8 +6,8 @@ import { usePlayer } from '../context/PlayerContext'
 
 const normalize = (song) => ({
   ...song,
-  audioUrl: song.audio?.url || song.audioUrl || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 const fmt = (s) => {
@@ -53,7 +53,7 @@ export default function Search() {
     setSearched(true)
     try {
       const res = await api.get(`/songs/search?q=${encodeURIComponent(q.trim())}`)
-      const raw = res.data.data?.songs || res.data.data || []
+      const raw = Array.isArray(res.data.data?.songs) ? res.data.data.songs : (Array.isArray(res.data.data) ? res.data.data : [])
       setResults(raw.map(normalize))
     } catch (err) {
       console.error('Search error:', err)

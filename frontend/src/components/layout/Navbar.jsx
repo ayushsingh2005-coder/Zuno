@@ -1,4 +1,4 @@
-import { Search, Bell } from 'lucide-react'
+import { Search, Bell, Menu } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
@@ -78,7 +78,10 @@ export default function Navbar() {
         alignItems: 'center',
         gap: '1.5rem',
       }}>
-        <span style={{
+        <div className="mobile-menu-btn" onClick={() => document.body.classList.toggle('sidebar-open')} style={{ cursor: 'pointer' }}>
+          <Menu size={20} color='var(--text)' />
+        </div>
+        <span className="desktop-notifications" style={{
           fontSize: '0.7rem',
           letterSpacing: '0.15em',
           color: 'var(--text-muted)',
@@ -86,7 +89,9 @@ export default function Navbar() {
         }}>
           NOTIFICATIONS
         </span>
-        <Bell size={16} color='var(--text-muted)' />
+        <div className="desktop-notifications">
+          <Bell size={16} color='var(--text-muted)' />
+        </div>
 
         {/* Avatar */}
         <div

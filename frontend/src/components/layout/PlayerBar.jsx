@@ -1,5 +1,5 @@
 import { usePlayer } from '../../context/PlayerContext'
-import { SkipBack, Play, Pause, SkipForward, Volume2 } from 'lucide-react'
+import { SkipBack, Play, Pause, SkipForward, Volume2, Shuffle, Repeat } from 'lucide-react'
 
 // Helper: seconds → "3:45"
 const fmt = (s) => {
@@ -15,11 +15,12 @@ export default function PlayerBar() {
     duration, seek,
     volume,
     togglePlay, playNext, playPrev,
-    seekTo, changeVolume,
+    seekTo, changeVolume, toggleShuffle, toggleLoop,
+    isShuffle, isLoop,
   } = usePlayer()
 
   return (
-    <footer style={{
+    <footer className="player-bar" style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
       height: 'var(--player-h)',
@@ -53,7 +54,11 @@ export default function PlayerBar() {
 
         {/* Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <button onClick={playPrev} style={{ color: 'var(--text-muted)' }}>
+          <button onClick={toggleShuffle} style={{ color: isShuffle ? 'var(--text)' : 'var(--text-muted)' }}>
+            <Shuffle size={14} />
+          </button>
+
+          <button onClick={playPrev} style={{ color: 'var(--text)' }}>
             <SkipBack size={16} />
           </button>
 
@@ -70,8 +75,12 @@ export default function PlayerBar() {
             {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           </button>
 
-          <button onClick={playNext} style={{ color: 'var(--text-muted)' }}>
+          <button onClick={playNext} style={{ color: 'var(--text)' }}>
             <SkipForward size={16} />
+          </button>
+
+          <button onClick={toggleLoop} style={{ color: isLoop ? 'var(--text)' : 'var(--text-muted)' }}>
+            <Repeat size={14} />
           </button>
         </div>
 
@@ -97,7 +106,7 @@ export default function PlayerBar() {
       </div>
 
       {/* Volume */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
+      <div className="player-bar-volume" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
         <Volume2 size={14} color='var(--text-muted)' />
         <input
           type='range'

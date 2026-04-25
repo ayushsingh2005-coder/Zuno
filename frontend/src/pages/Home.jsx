@@ -7,8 +7,8 @@ import { usePlayer } from '../context/PlayerContext'
 // Normalize song object to consistent shape
 const normalize = (song) => ({
   ...song,
-  audioUrl: song.audio?.url || song.audioUrl || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 function Card({ item, onClick }) {
@@ -117,8 +117,8 @@ export default function Home() {
         ])
 
         // normalize handles audio.url → audioUrl and thumbnail.url → thumbnail
-        const rawSongs  = songsRes.data.data?.songs  || songsRes.data.data  || []
-        const rawAlbums = albumsRes.data.data?.albums || albumsRes.data.data || []
+        const rawSongs  = Array.isArray(songsRes.data.data?.songs) ? songsRes.data.data.songs : (Array.isArray(songsRes.data.data) ? songsRes.data.data : [])
+        const rawAlbums = Array.isArray(albumsRes.data.data?.albums) ? albumsRes.data.data.albums : (Array.isArray(albumsRes.data.data) ? albumsRes.data.data : [])
 
         setSongs(rawSongs.map(normalize))
         setAlbums(rawAlbums)

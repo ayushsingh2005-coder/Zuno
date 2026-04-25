@@ -23,8 +23,8 @@ import { usePlayer } from '../context/PlayerContext'
 // Normalize song shape (same helper as Home.jsx)
 const normalize = (song) => ({
   ...song,
-  audioUrl:  song.audio?.url   || song.audioUrl  || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 // Derive unique genres from songs array, sorted A-Z
@@ -54,8 +54,8 @@ export default function Explore() {
           api.get('/albums'),
         ])
 
-        const rawSongs  = songsRes.data.data?.songs  || songsRes.data.data  || []
-        const rawAlbums = albumsRes.data.data?.albums || albumsRes.data.data || []
+        const rawSongs  = Array.isArray(songsRes.data.data?.songs) ? songsRes.data.data.songs : (Array.isArray(songsRes.data.data) ? songsRes.data.data : [])
+        const rawAlbums = Array.isArray(albumsRes.data.data?.albums) ? albumsRes.data.data.albums : (Array.isArray(albumsRes.data.data) ? albumsRes.data.data : [])
 
         const normalized = rawSongs.map(normalize)
         setSongs(normalized)

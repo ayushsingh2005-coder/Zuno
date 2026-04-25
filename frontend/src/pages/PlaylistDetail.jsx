@@ -7,8 +7,8 @@ import toast from 'react-hot-toast'
 
 const normalize = (song) => ({
   ...song,
-  audioUrl: song.audio?.url || song.audioUrl || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 const fmt = (s) => {
@@ -44,7 +44,7 @@ export default function PlaylistDetail() {
       const data = res.data.data
       const pl = data?.playlist || data
       setPlaylist(pl)
-      const raw = pl.songs || []
+      const raw = Array.isArray(pl.songs) ? pl.songs : []
       setSongs(raw.map(normalize))
     } catch (err) {
       console.error('Playlist fetch error:', err)
@@ -88,7 +88,7 @@ export default function PlaylistDetail() {
     setAddLoading(true)
     try {
       const res = await api.get('/songs')
-      const raw = res.data.data?.songs || []
+      const raw = Array.isArray(res.data.data?.songs) ? res.data.data.songs : (Array.isArray(res.data.data) ? res.data.data : [])
       // Filter out songs already in playlist
       const existing = new Set(songs.map(s => s._id))
       setAllSongs(raw.map(normalize).filter(s => !existing.has(s._id)))

@@ -7,8 +7,8 @@ import toast from 'react-hot-toast'
 
 const normalize = (song) => ({
   ...song,
-  audioUrl: song.audio?.url || song.audioUrl || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 export default function Library() {
@@ -38,9 +38,9 @@ export default function Library() {
         api.get('/playlists'),
         api.get('/likes'),
       ])
-      const rawPlaylists = plRes.data.data?.playlists || plRes.data.data || []
-setPlaylists(Array.isArray(rawPlaylists) ? rawPlaylists : [])
-      const rawLiked = likedRes.data.data?.songs || likedRes.data.data || []
+      const rawPlaylists = Array.isArray(plRes.data.data?.playlists) ? plRes.data.data.playlists : (Array.isArray(plRes.data.data) ? plRes.data.data : [])
+      setPlaylists(rawPlaylists)
+      const rawLiked = Array.isArray(likedRes.data.data?.songs) ? likedRes.data.data.songs : (Array.isArray(likedRes.data.data) ? likedRes.data.data : [])
       setLikedSongs(rawLiked.map(normalize))
     } catch (err) {
       console.error('Library fetch error:', err)

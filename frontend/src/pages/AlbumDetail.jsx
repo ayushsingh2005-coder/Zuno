@@ -6,8 +6,8 @@ import { usePlayer } from '../context/PlayerContext'
 
 const normalize = (song) => ({
   ...song,
-  audioUrl: song.audio?.url || song.audioUrl || '',
-  thumbnail: song.thumbnail?.url || song.thumbnail || '',
+  audioUrl: typeof song.audio === 'string' ? song.audio : (song.audio?.url || song.audioUrl || ''),
+  thumbnail: typeof song.thumbnail === 'string' ? song.thumbnail : (song.thumbnail?.url || ''),
 })
 
 const fmt = (s) => {
@@ -32,7 +32,7 @@ export default function AlbumDetail() {
       .then(res => {
         const data = res.data.data
         setAlbum(data.album || data)
-        const rawSongs = data.songs || data.album?.songs || []
+        const rawSongs = Array.isArray(data.songs) ? data.songs : (Array.isArray(data.album?.songs) ? data.album.songs : [])
         setSongs(rawSongs.map(normalize))
       })
       .catch(err => console.error('Album fetch error:', err))
@@ -93,9 +93,9 @@ export default function AlbumDetail() {
           background: 'var(--surface-2)',
           overflow: 'hidden',
         }}>
-          {album.coverImage?.url || album.coverImage ? (
+          {album.coverImage?.url || (typeof album.coverImage === 'string' ? album.coverImage : null) ? (
             <img
-              src={album.coverImage?.url || album.coverImage}
+              src={album.coverImage?.url || (typeof album.coverImage === 'string' ? album.coverImage : '')}
               alt={album.title}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
